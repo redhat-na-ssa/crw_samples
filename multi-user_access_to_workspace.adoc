@@ -1,12 +1,20 @@
 = Code Ready Workspaces:  Multi-User Access to same Workspace
 
-This tutorial provides instructions as to how a CodeReady Workspace (CRW) user can provide a different user with access to their workspace.
+This tutorial provides instructions on how a CodeReady Workspace (CRW) user can provide a different user with access to their workspace.
+
+:numbered:
 
 == Reference
 
 . https://gist.github.com/andykrohg/78677d90a5183091be0b96c6a3a3b882
+. link:https://access.redhat.com/documentation/en-us/red_hat_codeready_workspaces/2.15/html-single/administration_guide/index#authorizing-users_crw[CRW Admin Guide:  Authorizing Users]
 
 == Pre-reqs
+
+.  `cluster-admin` access to OpenShift cluster
+.  OpenShift cluster should be provisioned with several non cluster-admin users.
++
+This tutorial assumes OCP users with names of the following convention:  user[1-100]
 
 . CodeReady Workspaces installed via operator
 +
@@ -14,10 +22,11 @@ This tutorial has been tested using CodeReady Workspaces v2.15 on OCP 4.9
 
 . `cheCluster` custom resource installed in _openshift-workspaces_ namespace
 
-.  cluster-admin` access to OpenShift cluster
-.  OpenShift cluster should be provisioned with several non-cluster-admin users.
+. Keycloak for CRW is enabled with an _IdentityProvider_ called _openshift-v4_ that federates SSO to the OCP OAuth provider:
 +
-This tutorial assumes OCP users with names of the following convention:  user[1-100]
+image::docs/images/oauth_id_provider.png[]
+
+. _user1_ has authenticated into CRW and created a workspace (of any type)
 
 . `oc` utility installed locally
 . `jq` utility installed locally
@@ -25,12 +34,12 @@ This tutorial assumes OCP users with names of the following convention:  user[1-
 
 == Procedure
 
-_user1_ is a CRW user with a workspace.
+Scenario:  _user1_ is a CRW user that has previously created a CRW workspace.
 _user1_ will share his/her workspace with _user3_.
 
 . Authenticate into OpenShift at the command line as a _cluster-admin_ user. 
 
-. Set shell environment variables 
+. Set shell environment variables:
 +
 -----
 RHSSO_URL=https://$(oc get route keycloak -n openshift-workspaces --template='{{ .spec.host }}')
@@ -116,7 +125,9 @@ $ curl -v -X POST \
   "$CRW_URL/api/permissions"
 -----
 
-. As target user (user3), navigate to user1's workspace and authenticate in.
+. As target user (_user3_), navigate to _user1's_ workspace and authenticate in.
++
+image::docs/images/shared_workspace.png[]
 
 
 
